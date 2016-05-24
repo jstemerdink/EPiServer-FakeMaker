@@ -11,7 +11,7 @@ namespace EPiFakeMaker.Examples
     public class ExampleUnitTests
     {
         private FakeMaker _fake;
-        private FakePage _root;
+        private FakePage<PageData> _root;
 
         [SetUp]
         public void Setup()
@@ -19,27 +19,27 @@ namespace EPiFakeMaker.Examples
             _fake = new FakeMaker();
 
             // Arrange: create a page tree
-            _root = FakePage.Create("root");
+            _root = FakePage<PageData>.Create("root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(_root)
                 .AsStartPage();
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(_root);
 
-            FakePage
-                .Create<CustomPageData>("OtherPage")
+            FakePage<CustomPageData>
+                .Create("OtherPage")
                 .ChildOf(_root)
                 .HiddenFromMenu();
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(_root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("Our sub page")
                 .ChildOf(start);
 

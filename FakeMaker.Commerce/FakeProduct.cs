@@ -7,37 +7,39 @@ using System.Linq.Expressions;
 
 namespace EPiFakeMaker.Commerce
 {
-    public class FakeProduct : Fake
+    public class FakeProduct<T> : Fake where T : EntryContentBase, new()
     {
         private readonly IList<IFake> _children;
         private static readonly Random Randomizer = new Random();
 
         private FakeProduct()
         {
-            _children = new List<IFake>();
+            this._children = new List<IFake>();
         }
 
-        /// <summary>
-        /// Convenience feature that convert the Content property to EntryContentBase
-        /// </summary>
-        public virtual EntryContentBase Product
+        public T Product
         {
             get
             {
-                return To<EntryContentBase>();
+                return this.Content as T;
             }
         }
 
         public override IContent Content { get; protected set; }
-        public override IList<IFake> Children { get { return _children; } }
 
-        public static FakeProduct Create<T>(string productName) where T : EntryContentBase, new()
+        public override IList<IFake> Children { get { return this._children; } }
+
+        public static FakeProduct<T> Create(string productName)
         {
-            var fake = new FakeProduct { Content = new T() };
-
-            fake.Product.Name = productName;
-            fake.Product.DisplayName = productName;
-            fake.Product.Code = productName;
+            FakeProduct<T> fake = new FakeProduct<T>()
+            {
+                Content = new T()
+                {
+                    Name = productName,
+                    DisplayName = productName,
+                    Code = productName
+                }
+            };
 
             fake.WithReferenceId(Randomizer.Next(10, 1000));
 
@@ -47,23 +49,23 @@ namespace EPiFakeMaker.Commerce
             return fake;
         }
 
-        public virtual FakeProduct WithReferenceId(int referenceId)
+        public virtual FakeProduct<T> WithReferenceId(int referenceId)
         {
-            Content.ContentLink = new ContentReference(referenceId);
+            this.Content.ContentLink = new ContentReference(referenceId);
 
             return this;
         }
 
-        public virtual T To<T>() where T : class, IContent
+        public virtual TOther To<TOther>() where TOther : class, IContent
         {
-            return Content as T;
+            return Content as TOther;
         }
 
-        public virtual FakeProduct ChildOf(IFake parent)
+        public virtual FakeProduct<T> ChildOf(IFake parent)
         {
             parent.Children.Add(this);
 
-            Product.ParentLink = parent.Content.ContentLink;
+            this.Product.ParentLink = parent.Content.ContentLink;
 
             return this;
         }
@@ -73,10 +75,10 @@ namespace EPiFakeMaker.Commerce
 
         internal override void HelpCreatingMockForCurrentType(IFakeMaker maker)
         {
-            maker.CreateMockFor<EntryContentBase>(this);
-            maker.CreateMockFor<EntryContentBase>(this, Children);
-            maker.CreateMockFor(this, RepoGet);
-            maker.CreateMockFor(this, LoaderGet);
+            maker.CreateMockFor<T>(this);
+            maker.CreateMockFor<T>(this, this.Children);
+            maker.CreateMockFor(this, this.RepoGet);
+            maker.CreateMockFor(this, this.LoaderGet);
         }
     }
 }

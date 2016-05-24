@@ -21,7 +21,7 @@ namespace EPiFakeMaker.Commerce.Tests
         [Test]
         public void Create_product_with_reference_id()
         {
-            var product = FakeProduct.Create<ProductContent>("My Fake Product");
+            var product = FakeProduct<ProductContent>.Create("My Fake Product");
 
             Assert.IsNotNull(product.Content.ContentLink);
         }
@@ -30,7 +30,7 @@ namespace EPiFakeMaker.Commerce.Tests
         public void Create_product_with_default_property_values()
         {
             const string name = "My Fake Product";
-            var product = FakeProduct.Create<ProductContent>(name);
+            var product = FakeProduct<ProductContent>.Create(name);
 
             Assert.AreEqual(product.Product.Name, name);
             Assert.AreEqual(product.Product.DisplayName, name);
@@ -41,7 +41,7 @@ namespace EPiFakeMaker.Commerce.Tests
         public void Get_product_by_using_ServiceLocator()
         {
             // Arrange
-            var fakePhone = FakeProduct.Create<ProductContent>("My Fake Phone");
+            var fakePhone = FakeProduct<ProductContent>.Create("My Fake Phone");
 
             _fake.AddToRepository(fakePhone);
 
@@ -63,7 +63,7 @@ namespace EPiFakeMaker.Commerce.Tests
             // Arrange
             var tomorrow = System.DateTime.Today.AddDays(1);
 
-            var fakePhone = FakeProduct.Create<ProductContent>("My Fake Phone");
+            var fakePhone = FakeProduct<ProductContent>.Create("My Fake Phone");
             fakePhone.Product.StopPublish = tomorrow;
 
             _fake.AddToRepository(fakePhone);
@@ -80,14 +80,14 @@ namespace EPiFakeMaker.Commerce.Tests
         [Test]
         public void Get_children()
         {
-            var phones = FakeProduct.Create<VariationContent>("phones");
+            var phones = FakeProduct<ProductContent>.Create("phones");
 
-            var phone1 = FakeProduct
-                .Create<ProductContent>("iphone standard")
+            var phone1 = FakeProduct<VariationContent>
+                .Create("iphone standard")
                 .ChildOf(phones);
 
-            var phone2 = FakeProduct
-                .Create<ProductContent>("iphone gold")
+            var phone2 = FakeProduct<VariationContent>
+                .Create("iphone gold")
                 .ChildOf(phones);
 
             _fake.AddToRepository(phones);

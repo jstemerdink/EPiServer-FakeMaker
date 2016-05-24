@@ -23,14 +23,14 @@ namespace EPiFakeMaker.Tests
         public void Get_descendants()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("About us")
                 .ChildOf(start);
 
@@ -55,14 +55,14 @@ namespace EPiFakeMaker.Tests
         public void Get_descendants_by_using_ServiceLocator()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("About us")
                 .ChildOf(start);
 
@@ -87,20 +87,20 @@ namespace EPiFakeMaker.Tests
             var lastWeek = DateTime.Today.AddDays(-7);
             var yesterday = DateTime.Today.AddDays(-1);
 
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root)
                 .PublishedOn(lastWeek);
 
-            FakePage
+            FakePage<PageData>
                 .Create("About us")
                 .ChildOf(start)
                 .PublishedOn(lastWeek, yesterday);
 
-            FakePage
+            FakePage<PageData>
                 .Create("Our services")
                 .ChildOf(start)
                 .PublishedOn(lastWeek);
@@ -126,19 +126,19 @@ namespace EPiFakeMaker.Tests
         public void Get_pages_visible_in_menu()
         {
             // Arrange
-            var root = FakePage.Create("root");
+            var root = FakePage<PageData>.Create("root");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root)
                 .VisibleInMenu();
 
-            FakePage
+            FakePage<PageData>
                 .Create("OtherPage")
                 .ChildOf(root)
                 .HiddenFromMenu();
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(root)
                 .VisibleInMenu();
@@ -171,18 +171,18 @@ namespace EPiFakeMaker.Tests
         public void Get_pages_of_certain_pagedata_type()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("root");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root);
 
-            FakePage
-                .Create<CustomPageData>("OtherPage")
+            FakePage<CustomPageData>
+                .Create("OtherPage")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(root);
 
@@ -207,19 +207,19 @@ namespace EPiFakeMaker.Tests
         public void Get_pages_with_certain_pagetypeid()
         {
             // Arrange
-            var root = FakePage.Create("root");
+            var root = FakePage<PageData>.Create("root");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root)
                 .WithContentTypeId(1);
 
-            FakePage
+            FakePage<PageData>
                 .Create("OtherPage")
                 .ChildOf(root)
                 .WithContentTypeId(2);
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(root)
                 .WithContentTypeId(3);
@@ -246,18 +246,18 @@ namespace EPiFakeMaker.Tests
         public void Get_pages_with_custom_property()
         {
             // Arrange
-            var root = FakePage.Create("root");
+            var root = FakePage<PageData>.Create("root");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("OtherPage")
                 .ChildOf(root)
                 .WithProperty("CustomProperty", new PropertyString("Custom value"));
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(root);
 
@@ -287,20 +287,20 @@ namespace EPiFakeMaker.Tests
         public void Get_pages_with_certain_languagebranch()
         {
             // Arrange
-            var root = FakePage.Create("root").WithLanguageBranch("en");
+            var root = FakePage<PageData>.Create("root").WithLanguageBranch("en");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root)
                 .WithLanguageBranch("en");
 
-            FakePage
+            FakePage<PageData>
                 .Create("OtherPage")
                 .ChildOf(root)
                 .WithLanguageBranch("sv");
 
-            FakePage.
-                Create("Contact")
+            FakePage<PageData>
+                .Create("Contact")
                 .ChildOf(root)
                 .WithLanguageBranch("en");
 
@@ -331,17 +331,17 @@ namespace EPiFakeMaker.Tests
         {
             // Arrange
             var root =
-                FakePage.Create("root")
+                FakePage<PageData>.Create("root")
                     .WithChildren(
-                        new List<FakePage>
+                        new List<FakePage<PageData>>
                             {
-                                FakePage.Create("AboutUs"),
-                                FakePage.Create("News").WithChildren(new List<FakePage>
+                                FakePage<PageData>.Create("AboutUs"),
+                                FakePage<PageData>.Create("News").WithChildren(new List<FakePage<PageData>>
                                         {
-                                            FakePage.Create("News item 1"),
-                                            FakePage.Create("News item 2")
+                                            FakePage<PageData>.Create("News item 1"),
+                                            FakePage<PageData>.Create("News item 2")
                                         }),
-                                FakePage.Create("Contact")
+                                FakePage<PageData>.Create("Contact")
                             });
 
 
@@ -365,16 +365,16 @@ namespace EPiFakeMaker.Tests
         [Test]
         public void Set_a_page_as_start_page()
         {
-            var root = FakePage
-                .Create<PageData>("Root");
+            var root = FakePage<PageData>
+                .Create("Root");
 
-            var start = FakePage
-                .Create<PageData>("Start")
+            var start = FakePage<PageData>
+                .Create("Start")
                 .ChildOf(root)
                 .AsStartPage();
 
-            FakePage
-                .Create<PageData>("Child")
+            FakePage<PageData>
+                .Create("Child")
                 .ChildOf(start);
 
             _fake.AddToRepository(root);
@@ -386,8 +386,8 @@ namespace EPiFakeMaker.Tests
         public void Get_page_of_explicit_page_type()
         {
             // Arrange
-            var customPage = FakePage
-                .Create<CustomPageData>("MyCustomPage");
+            var customPage = FakePage<CustomPageData>
+                .Create("MyCustomPage");
 
             _fake.AddToRepository(customPage);
 
@@ -410,8 +410,8 @@ namespace EPiFakeMaker.Tests
         public void Get_page_of_explicit_base_page_type()
         {
             // Arrange
-            var fakePage = FakePage
-                .Create<InteritsCustomPageData>("MyInheritedCustomPage");
+            var fakePage = FakePage<InteritsCustomPageData>
+                .Create("MyInheritedCustomPage");
 
             _fake.AddToRepository(fakePage);
 
@@ -432,15 +432,15 @@ namespace EPiFakeMaker.Tests
         public void Get_children_as_explicit_page_type()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root).AsStartPage();
 
-            var aboutUs = FakePage
-                .Create<CustomPageData>("About us")
+            var aboutUs = FakePage<CustomPageData>
+                .Create("About us")
                 .ChildOf(start);
 
             _fake.AddToRepository(root);
@@ -463,7 +463,7 @@ namespace EPiFakeMaker.Tests
         public void Get_instance_of_base_type()
         {
             // Arrange
-            var fakePage = FakePage.Create("MyPage");
+            var fakePage = FakePage<PageData>.Create("MyPage");
 
             _fake.AddToRepository(fakePage);
 
@@ -489,7 +489,7 @@ namespace EPiFakeMaker.Tests
         public void Get_instance_of_base_interface_type()
         {
             // Arrange
-            var fakePage = FakePage.Create("MyPage");
+            var fakePage = FakePage<PageData>.Create("MyPage");
 
             _fake.AddToRepository(fakePage);
 
@@ -515,7 +515,7 @@ namespace EPiFakeMaker.Tests
         public void Get_instance_of_pagedata_with_derived_class()
         {
             // Arrange
-            var fakePage = FakePage.Create<CustomPageData>("MyPage");
+            var fakePage = FakePage<CustomPageData>.Create("MyPage");
 
             _fake.AddToRepository(fakePage);
 
@@ -526,29 +526,29 @@ namespace EPiFakeMaker.Tests
             var loader = _fake.ContentLoader;
 
             // Act
-            var result_from_repo = repository.Get<PageData>(fakePage.Content.ContentLink);
-            var result_from_loader = loader.Get<PageData>(fakePage.Content.ContentLink);
+            var result_from_repo = repository.Get<CustomPageData>(fakePage.Content.ContentLink);
+            var result_from_loader = loader.Get<CustomPageData>(fakePage.Content.ContentLink);
 
             // Assert
             Assert.IsNotNull(result_from_repo);
-            Assert.That(result_from_repo is PageData);
+            Assert.That(result_from_repo is CustomPageData);
 
             Assert.IsNotNull(result_from_loader);
-            Assert.That(result_from_loader is PageData);
+            Assert.That(result_from_loader is CustomPageData);
         }
 
         [Test]
         public void Get_children_as_base_content_type()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root).AsStartPage();
 
-            var aboutUs = FakePage
+            var aboutUs = FakePage<PageData>
                 .Create("About us")
                 .ChildOf(start);
 
@@ -573,14 +573,14 @@ namespace EPiFakeMaker.Tests
         public void Get_children_as_base_content_interface_type()
         {
             // Arrange
-            var root = FakePage
+            var root = FakePage<PageData>
                 .Create("Root");
 
-            var start = FakePage
+            var start = FakePage<PageData>
                 .Create("Start")
                 .ChildOf(root).AsStartPage();
 
-            var aboutUs = FakePage
+            var aboutUs = FakePage<PageData>
                 .Create("About us")
                 .ChildOf(start);
 
@@ -605,17 +605,17 @@ namespace EPiFakeMaker.Tests
         public void Get_children()
         {
             // Arrange
-            var root = FakePage.Create("root");
+            var root = FakePage<PageData>.Create("root");
 
-            FakePage
+            FakePage<PageData>
                 .Create("AboutUs")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("OtherPage")
                 .ChildOf(root);
 
-            FakePage
+            FakePage<PageData>
                 .Create("Contact")
                 .ChildOf(root);
 
@@ -639,7 +639,7 @@ namespace EPiFakeMaker.Tests
         [Test]
         public void Get_content_as_page()
         {
-            var fake = FakePage.Create("MyPage");
+            var fake = FakePage<PageData>.Create("MyPage");
 
             Assert.That(fake.Page, Is.Not.Null);
         }

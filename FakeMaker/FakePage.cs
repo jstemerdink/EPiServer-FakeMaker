@@ -9,7 +9,7 @@ using Moq;
 
 namespace EPiFakeMaker
 {
-    public class FakePage : Fake
+    public class FakePage<T> : Fake where T : PageData, new()
     {
         private readonly IList<IFake> _children;
         private Mock<SiteDefinition> _siteDefinitonMock;
@@ -23,25 +23,21 @@ namespace EPiFakeMaker
         /// <summary>
         /// Convenience feature that convert the Content property to PageData
         /// </summary>
-        public virtual PageData Page
+        public virtual T Page
         {
             get
             {
-                return To<PageData>();
+                return this.Content as T;
             }
         }
 
         public override IContent Content { get; protected set; }
+
         public override IList<IFake> Children { get { return _children; } }
 
-        public static FakePage Create(string pageName)
+        public static FakePage<T> Create(string pageName)
         {
-            return Create<PageData>(pageName);
-        }
-
-        public static FakePage Create<T>(string pageName) where T : PageData, new()
-        {
-            var fake = new FakePage { Content = new T() };
+            FakePage<T> fake = new FakePage<T> { Content = new T() };
 
             fake.Content.Property["PageName"] = new PropertyString(pageName);
 
@@ -55,7 +51,7 @@ namespace EPiFakeMaker
             return fake;
         }
 
-        public virtual FakePage ChildOf(IFake parent)
+        public virtual FakePage<T> ChildOf(IFake parent)
         {
             parent.Children.Add(this);
 
@@ -64,14 +60,14 @@ namespace EPiFakeMaker
             return this;
         }
 
-        public virtual FakePage PublishedOn(DateTime publishDate)
+        public virtual FakePage<T> PublishedOn(DateTime publishDate)
         {
             PublishedOn(publishDate, null);
 
             return this;
         }
 
-        public virtual FakePage PublishedOn(DateTime publishDate, DateTime? stopPublishDate)
+        public virtual FakePage<T> PublishedOn(DateTime publishDate, DateTime? stopPublishDate)
         {
             Content.Property["PageStartPublish"] = new PropertyDate(publishDate);
 
@@ -82,73 +78,73 @@ namespace EPiFakeMaker
             return this;
         }
 
-        public virtual FakePage VisibleInMenu()
+        public virtual FakePage<T> VisibleInMenu()
         {
             return SetMenuVisibility(true);
         }
 
-        public virtual FakePage HiddenFromMenu()
+        public virtual FakePage<T> HiddenFromMenu()
         {
             return SetMenuVisibility(false);
         }
 
-        public virtual FakePage SetMenuVisibility(bool isVisible)
+        public virtual FakePage<T> SetMenuVisibility(bool isVisible)
         {
             Content.Property["PageVisibleInMenu"] = new PropertyBoolean(isVisible);
 
             return this;
         }
 
-        public virtual FakePage WithReferenceId(int referenceId)
+        public virtual FakePage<T> WithReferenceId(int referenceId)
         {
             Content.Property["PageLink"] = new PropertyPageReference(new PageReference(referenceId));
 
             return this;
         }
 
-        public virtual FakePage WithLanguageBranch(string languageBranch)
+        public virtual FakePage<T> WithLanguageBranch(string languageBranch)
         {
             Content.Property["PageLanguageBranch"] = new PropertyString(languageBranch);
 
             return this;
         }
 
-        public virtual FakePage WithProperty(string propertyName, PropertyData propertyData)
+        public virtual FakePage<T> WithProperty(string propertyName, PropertyData propertyData)
         {
             Content.Property[propertyName] = propertyData;
 
             return this;
         }
 
-        public virtual FakePage WithContentTypeId(int contentTypeId)
+        public virtual FakePage<T> WithContentTypeId(int contentTypeId)
         {
             Content.Property["PageTypeID"] = new PropertyNumber(contentTypeId);
 
             return this;
         }
 
-        public virtual FakePage WithChildren(IEnumerable<FakePage> children)
+        public virtual FakePage<T> WithChildren(IEnumerable<FakePage<T>> children)
         {
             children.ToList().ForEach(c => c.ChildOf(this));
 
             return this;
         }
 
-        public virtual FakePage StopPublishOn(DateTime stopPublishDate)
+        public virtual FakePage<T> StopPublishOn(DateTime stopPublishDate)
         {
             Content.Property["PageStopPublish"] = new PropertyDate(stopPublishDate);
 
             return this;
         }
 
-        public virtual FakePage WorkStatus(VersionStatus status)
+        public virtual FakePage<T> WorkStatus(VersionStatus status)
         {
             Content.Property["PageWorkStatus"] = new PropertyNumber((int)status);
 
             return this;
         }
 
-        public virtual FakePage AsStartPage()
+        public virtual FakePage<T> AsStartPage()
         {
             if (_siteDefinitonMock == null)
             {
@@ -162,7 +158,7 @@ namespace EPiFakeMaker
 
         private static Mock<SiteDefinition> SetupSiteDefinition()
         {
-            var mock = new Mock<SiteDefinition>();
+            Mock<SiteDefinition> mock = new Mock<SiteDefinition>();
 
             mock.SetupGet(def => def.Name).Returns("FakeMakerSiteDefinition");
 
@@ -171,9 +167,9 @@ namespace EPiFakeMaker
             return mock;
         }
 
-        public virtual T To<T>() where T : class, IContent
+        public virtual TOther To<TOther>() where TOther : class, IContent
         {
-            return Content as T;
+            return Content as TOther;
         }
 
         internal Expression<Func<IContentRepository, IContent>> RepoGet { get; private set; }
@@ -181,8 +177,8 @@ namespace EPiFakeMaker
 
         internal override void HelpCreatingMockForCurrentType(IFakeMaker maker)
         {
-            maker.CreateMockFor<PageData>(this);
-            maker.CreateMockFor<PageData>(this, Children);
+            maker.CreateMockFor<T>(this);
+            maker.CreateMockFor<T>(this, Children);
             maker.CreateMockFor(this, RepoGet);
             maker.CreateMockFor(this, LoaderGet);
         }
